@@ -12,17 +12,17 @@ apt-get update &&
 apt-get install -y docker.io npm &&
 docker --version &&
 
-apt-get install -y python3-venv
-python3 -m venv venv
-source venv/bin/activate
-pip install checkov
-checkov --version
+apt-get install -y python3-venv &&
+python3 -m venv venv &&
+source venv/bin/activate &&
+pip install checkov &&
+checkov --version &&
 
-apt update
-apt install -y wget unzip
-wget https://releases.hashicorp.com/terraform/1.6.6/terraform_1.6.6_linux_amd64.zip
-unzip terraform_1.6.6_linux_amd64.zip
-mv terraform /usr/local/bin/
+apt update &&
+apt install -y wget unzip &&
+wget https://releases.hashicorp.com/terraform/1.6.6/terraform_1.6.6_linux_amd64.zip &&
+unzip terraform_1.6.6_linux_amd64.zip &&
+mv terraform /usr/local/bin/ &&
 
 chown root:docker /var/run/docker.sock &&
 chmod 660 /var/run/docker.sock &&
