@@ -16,7 +16,7 @@ apt-get install -y python3-venv
 python3 -m venv venv
 source venv/bin/activate
 pip install checkov
-checkov version
+checkov --version
 
 chown root:docker /var/run/docker.sock &&
 chmod 660 /var/run/docker.sock &&
