@@ -20,11 +20,15 @@ fi &&
 # Kubectl and Dependencies 
 apt update && apt install -y curl apt-transport-https ca-certificates &&
 
-curl -LO https://dl.k8s.io/release/v1.29.0/bin/linux/amd64/kubectl
+curl -LO https://dl.k8s.io/release/v1.29.0/bin/linux/amd64/kubectl &&
 install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl &&
 kubectl version --client
 
-terraform version &&
+# Containerd and Kind (Kind is lightweight and best for CI/CD pipelines)
+apt update && apt install -y containerd &&
+curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.22.0/kind-linux-amd64 &&
+chmod +x ./kind &&
+mv ./kind /usr/local/bin/kind
 
 # Checkov via pipx (clean)
 pipx install checkov &&
