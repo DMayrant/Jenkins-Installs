@@ -1,14 +1,66 @@
-Deploying to kind in Jenkins CI/CD 
+Kind 
 
-create kubernetes manifest using dry run then 'Deploy to kind'
+pull image first, scan with trivy and SNYK 
+
+expose deploy, port-forward and use OWASP ZAP, use a Kubescape and kube-bench scan after
 
 
-  stages {
+
+        stage('Create Kind Cluster') {
+            steps {
+                sh '''
+                kind create cluster --name ci-cluster || true
+                '''
+            }
+        }
+
+        stage('Generate Manifests') {
+            steps {
+                sh '''
+                mkdir -p k8s
+
+                kubectl create deployment nginx \
+                  --image=$IMAGE \
+                  --dry-run=client -o yaml > k8s/deployment.yaml
+
+                kubectl expose deployment nginx \
+                  --port=80 \
+                  --type=NodePort \
+                  --dry-run=client -o yaml > k8s/service.yaml
+                '''
+            }
+        }
+
         stage('Deploy to Kind') {
             steps {
                 sh '''
-                export KUBECONFIG=$HOME/.kube/config
+                docker run --rm \
+                  --network kind \
+                  -v ~/.kube:/root/.kube \
+                  bitnami/kubectl:latest \
+                  kubectl apply -f k8s/
+                '''
+            }
+        }
 
-                kubectl get nodes
+        stage('Verify Deployment') {
+            steps {
+                sh '''
+                docker run --rm \
+                  --network kind \
+                  -v ~/.kube:/root/.kube \
+                  bitnami/kubectl:latest \
+                  kubectl rollout status deployment/nginx
+                '''
+            }
+        }
 
-                kubectl apply -f <deployment-name>
+        stage('Cleanup') {
+            steps {
+                sh '''
+                kind delete cluster --name ci-cluster || true
+                '''
+            }
+        }
+    }
+}
