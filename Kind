@@ -1,0 +1,14 @@
+Deploying to kind in Jenkins CI/CD 
+
+create kubernetes manifest using dry run then 'Deploy to kind'
+
+
+  stages {
+        stage('Deploy to Kind') {
+            steps {
+                sh '''
+                export KUBECONFIG=$HOME/.kube/config
+
+                kubectl get nodes
+
+                kubectl apply -f <deployment-name>
